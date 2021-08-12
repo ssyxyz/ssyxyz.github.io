@@ -53,6 +53,9 @@ body{
 	</head>
 	<body onselectstart="return false" oncontextmenu="self.event.returnValue=false" class="body"> 
 
+     <script src="./layer/jquery-3.6.0.min.js"></script>
+     <script src="./layer/layer.js"></script>
+
 		<!-- Wrapper -->
 			<div id="wrapper" style="background:url("./image/1.jpg");">
 
@@ -82,7 +85,7 @@ body{
 
 				<!-- Footer -->
 					<footer id="footer">
-						<p class="copyright">©2020 <a>十三幺</a> 版权所有  <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#D0D0D0;">与我联系</a></p>
+						<p class="copyright">©2020十三幺 <a id="test2" style="color:#D0D0D0;" class="layui-btn">投喂站长</a> <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#D0D0D0;">与我联系</a></p>
 
 					</footer>
 
@@ -100,4 +103,21 @@ body{
 <div style="position: static; display: none; width: 0px; height: 0px; border: none; padding: 0px; margin: 0px;"><div id="trans-tooltip"><div id="tip-left-top" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-left-top.png");"=""></div><div id="tip-top" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-top.png")="" repeat-x;"=""></div><div id="tip-right-top" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-right-top.png");"=""></div><div id="tip-right" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-right.png")="" repeat-y;"=""></div><div id="tip-right-bottom" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-right-bottom.png");"=""></div><div id="tip-bottom" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-bottom.png")="" repeat-x;"=""></div><div id="tip-left-bottom" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-left-bottom.png");"=""></div><div id="tip-left" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-left.png");"=""></div><div id="trans-content"></div></div><div id="tip-arrow-bottom" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-arrow-bottom.png");"=""></div><div id="tip-arrow-top" style="background: url(" chrome-extension:="" ikkbfngojljohpekonpldkamedehakni="" imgs="" map="" tip-arrow-top.png");"=""></div></div>
 	
 
-  <div class="layui-xzxform-label"></div></body></html>
+  <div class="layui-xzxform-label"></div></body>
+  
+  			<script>
+	$('#test2').on('click', function(){
+	layer.open({
+	  title: '<b><a style="color:black;">扫描二维码投喂站长~</a></b>'
+	  ,content: '<div><center><img src="./image/touwei.jpg" style="width:200px;height:200px;"></img></center></div>'
+	  ,offset: '100px'
+	  ,anim: '1'
+	  ,resize: false
+	  ,scrollbar: false
+	  ,move: false
+	  ,btnAlign: 'c'
+	  ,area: ['80%', '55%']
+	         });  
+	});
+	</script>
+  </html>
