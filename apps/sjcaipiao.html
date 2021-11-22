@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="baidu-site-verification" content="code-9z4v1yKYid" />
+    <title>随机彩票</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="十三幺,SSY,发卡平台,发卡系统">
+	<meta name="author" content="十三幺">
+	<meta name="version" content="<?php echo VERSION;?>">
+    <meta name="description" content="<?php echo $config['webdescription'];?>">
+    <link rel="stylesheet" href="./css/layui/css/layui.css">
+    <link rel="stylesheet" href="./css/style.css">
+
+	<link rel="shortcut icon" href="./css/favicon.png" /> 
+    <style>
+        * {
+            cursor: pointer;
+        }
+        span {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border: 1px solid #000;
+            border-radius: 50%;
+            margin: 5px;
+        }
+    </style>
+    <script>
+    var TOKEN = "<?php echo $csrf_token;?>";
+    if (self != top) {
+        top.location = self.location;
+    }
+    </script>
+
+</head>
+
+<body id="zlkbbody">
+    
+<div class="site-mobile-shade" style="border-radius:20px;"></div>
+<div class="layui-container fly-marginTop" style="border-radius:20px;">
+    <div class="fly-panel fly-panel-user" pad20 style="border-radius:20px;">
+        <div class="layui-tab layui-tab-brief" lay-filter="user" style="border-radius:20px;">
+            <ul class="layui-tab-title" id="LAY_mine">
+                <li><a href="../index.html">返回首页</a></li>
+                <li><a href="../liebiao/index.html">应用列表</a></li>
+                <li class="layui-this" lay-id="info">随机彩票</li>
+                
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-form-pane layui-tab-item layui-show">
+					 
+
+<blockquote class="layui-elem-quote">
+			    随机产生一注双色球号码；购买彩票请去线下。
+			</blockquote>
+            <div class="layui-tab-content">
+
+
+                <div id="red"></div>
+                <div id="blue"></div>
+                <center><button style="height:30px;">&nbsp;&nbsp;&nbsp;开始&nbsp;&nbsp;&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;<button style="height:30px;">&nbsp;&nbsp;&nbsp;停止&nbsp;&nbsp;&nbsp;</button></center>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+					 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fly-footer">
+	  <p><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#D0D0D0;">有更多疑问请联系我哟</a></p>
+	</div>
+<script src="./css/layui/layui.js"></script>
+<script>
+    var red = document.getElementById('red')
+    var blue = document.getElementById('blue')
+    var start = document.getElementsByTagName('button')[0];
+    var end = document.getElementsByTagName('button')[1];
+    function generate(element, num) {
+        var str = '';
+        for (var j = 1; j <= num; j++) {
+            str += '<span>' + j + '</span>'
+        }
+        element.innerHTML = str;
+    }
+    generate(red, 33);
+    generate(blue, 16);
+    function ranDom(start, end) {
+        var _a = end - start + 1;
+        return Math.floor(Math.random() * _a + start)
+    }
+    function arrAy(num, start, end) {
+        var _b = [];
+        while (_b.length < num) {
+            var _c = ranDom(start, end)
+            if (_b.indexOf(_c) === -1) {
+                _b.push(_c);
+            }
+        }
+        return _b;
+    }
+    function backGround(arr, color, element) {
+        for (var i = 0; i < element.length; i++) {
+            element[i].style.background = '';
+        }
+        for (var j = 0; j < arr.length; j++) {
+            element[arr[j]-1].style.background = color;
+        }
+    }
+    function select() {
+        var _d = arrAy(6, 1, 33)
+        var _e = arrAy(1, 1, 16)
+        backGround(_d, 'red', red.children);
+        backGround(_e, 'blue', blue.children);
+    }
+    var time = null
+    start.onclick = function () {
+        if (time == null) {
+            time = setInterval(function () {
+                select()
+            }, 60)
+        }
+    }
+    end.onclick = function () {
+        clearInterval(time)
+        time = null
+    }
+</script>
+</body>
+</html>
