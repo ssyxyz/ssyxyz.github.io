@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="baidu-site-verification" content="code-9z4v1yKYid" />
+    <title>做二维码</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="十三幺,SSY,发卡平台,发卡系统">
+	<meta name="author" content="十三幺">
+	<meta name="version" content="<?php echo VERSION;?>">
+    <meta name="description" content="<?php echo $config['webdescription'];?>">
+    <link rel="stylesheet" href="./css/layui/css/layui.css">
+    <link rel="stylesheet" href="./css/style.css">
+
+	<link rel="shortcut icon" href="./css/favicon.png" /> 
+    <script>
+    var TOKEN = "<?php echo $csrf_token;?>";
+    if (self != top) {
+        top.location = self.location;
+    }
+    </script>
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/qrcode.js"></script>
+</head>
+
+<body id="zlkbbody">
+    
+<div class="site-mobile-shade" style="border-radius:20px;"></div>
+<div class="layui-container fly-marginTop" style="border-radius:20px;">
+    <div class="fly-panel fly-panel-user" pad20 style="border-radius:20px;">
+        <div class="layui-tab layui-tab-brief" lay-filter="user" style="border-radius:20px;">
+            <ul class="layui-tab-title" id="LAY_mine">
+                <li><a href="../index.html">返回首页</a></li>
+                <li><a href="../liebiao/index.html">应用列表</a></li>
+                <li class="layui-this" lay-id="info">做二维码</li>
+                
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-form-pane layui-tab-item layui-show">
+					 
+
+<blockquote class="layui-elem-quote">
+			    一个简单又快速的二维码生成器，支持输入字母、数字、汉字以及网址等内容。
+			</blockquote>
+            <div class="layui-tab-content">
+
+                <input id="text" type="text" placeholder="请在此输入内容" style="width:100%;height:30px;" /><br />
+                <br>
+           
+                <center><button onclick="makeCode()" style="height:30px;">&nbsp;&nbsp;点我生成&nbsp;&nbsp;</button><br>
+                <div id="qrcode" style="width:200px; height:200px; margin-top:30px;"></div></center><br>
+                <center><div style="width:80%;color:#7a7374;">特别注意：在输入网址时一定要输入完整的网址（例如：https://www.baidu.com/）。如果只输入 www.baidu.com 而不输入 https:// 会导致生成的二维码无法直接跳转目标网站。切记！！！<div></center>
+                
+                <script type="text/javascript">
+                var qrcode = new QRCode(document.getElementById("qrcode"), {
+                    width : 200,
+                    height : 200
+                });
+                
+                function makeCode () {		
+                    var elText = document.getElementById("text");
+                    
+                    
+                    
+                    qrcode.makeCode(elText.value);
+                }
+                
+                makeCode();
+                </script>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+					 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fly-footer">
+	  <p><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#D0D0D0;">有更多疑问请联系我哟</a></p>
+	</div>
+<script src="./hm.js"></script>
+<script src="./css/layui/layui.js"></script>
+<script>
+    //var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1278035195'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s9.cnzz.com/z_stat.php%3Fid%3D1278035195%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));
+    var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?76e1baaa3fabd065086f3efcd0b5c6c7";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s)})();
+    </script>
+</body>
+</html>
