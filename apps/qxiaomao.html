@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="baidu-site-verification" content="code-9z4v1yKYid" />
+    <title>圈住小猫</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="十三幺,SSY,发卡平台,发卡系统">
+	<meta name="author" content="十三幺">
+	<meta name="version" content="<?php echo VERSION;?>">
+    <meta name="description" content="<?php echo $config['webdescription'];?>">
+    <link rel="stylesheet" href="./css/layui/css/layui.css">
+    <link rel="stylesheet" href="./css/style.css">
+
+	<link rel="shortcut icon" href="./css/favicon.png" /> 
+    <script>
+    var TOKEN = "<?php echo $csrf_token;?>";
+    if (self != top) {
+        top.location = self.location;
+    }
+    </script>
+<script src="./js/phaser.min.js"></script>
+<script src="./js/catch-the-cat.js"></script>
+<style>
+    #catch-the-cat {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+</head>
+
+<body id="zlkbbody">
+    
+<div class="site-mobile-shade" style="border-radius:20px;"></div>
+<div class="layui-container fly-marginTop" style="border-radius:20px;">
+    <div class="fly-panel fly-panel-user" pad20 style="border-radius:20px;">
+        <div class="layui-tab layui-tab-brief" lay-filter="user" style="border-radius:20px;">
+            <ul class="layui-tab-title" id="LAY_mine">
+                <li><a href="../index.html">返回首页</a></li>
+                <li><a href="../liebiao/index.html">应用列表</a></li>
+                <li class="layui-this" lay-id="info">圈住小猫</li>
+                
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-form-pane layui-tab-item layui-show">
+					 
+
+<blockquote class="layui-elem-quote">
+			    想办法困住小猫！  喵 ~
+			</blockquote>
+            <div class="layui-tab-content">
+
+                <div class="container">
+                    <div id="catch-the-cat"></div>
+                    <script>
+                        window.game = new CatchTheCatGame({
+                            w: 9,
+                            h: 9,
+                            r: 15,
+                            backgroundColor: 0xffffff,
+                            parent: 'catch-the-cat',
+                            statusBarAlign: 'center',
+                            credit: 'ssyxyz.github.io'
+                        });
+                    </script>
+                </div>
+               
+
+            </div>
+        </div>
+    </div>
+</div>
+					 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fly-footer">
+	  <p><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#D0D0D0;">有更多疑问请联系我哟</a></p>
+	</div>
+<script src="./css/layui/layui.js"></script>
+</body>
+</html>
