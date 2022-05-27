@@ -21,7 +21,10 @@
         top.location = self.location;
     }
     </script>
-
+    <script language="JavaScript" type="text/javascript" src="./js/jquery-1.4.2.min.js"></script>
+	<style type="text/css">
+        .highlight { background: #FFFF00; color: #FF9966; }
+    </style>
 </head>
 
 <body id="zlkbbody">
@@ -43,11 +46,11 @@
 <blockquote class="layui-elem-quote">
 			    本页面为资源汇总界面，点击对应文字跳转至下载界面。如果出现无法下载等错误，请<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#FF9966;">点击此处</a>联系站长补档。
 			</blockquote>
-            <div class="layui-tab-content">
+			<center><input type="text" id="txtKey" placeholder="请输入关键词" style="background:#CCCCCC;height:30px;margin-top:10px;border: none;vertical-align:middle;"/><input type="button" value="&nbsp;&nbsp;查&nbsp;找&nbsp;&nbsp;" id="btnSearch" style="height:30px;margin-top:10px;border: none;vertical-align:middle;"/></center>
+            <div class="layui-tab-content" id="pretime">
 
-                  <h3 style="margin-top:15px;">● <a target="_blank" href="https://wwd.lanzout.com/iZnNu05h3h1e" style="color:#FF6666">pop猫回收站图标</a></h1>
-                  <h3 style="margin-top:15px;">● <a target="_blank" href="https://wwd.lanzout.com/iKQCJ05h6g2h" style="color:#FF6666">png和ico互转工具</a></h1>
-                
+                  <h3 style="margin-top:15px;"><a target="_blank" href="https://wwd.lanzout.com/iZnNu05h3h1e" style="color:#FF6666">● pop猫回收站图标</a></h1>
+                  <h3 style="margin-top:15px;"><a target="_blank" href="https://wwd.lanzout.com/iKQCJ05h6g2h" style="color:#FF6666">● png和ico互转工具</a></h1>
 
             </div>
         </div>
@@ -63,5 +66,36 @@
 	  <p><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2719431494&site=qq&menu=yes" style="color:#D0D0D0;">有更多疑问请联系我哟</a></p>
 	</div>
 <script src="./css/layui/layui.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var pretime = $('#pretime').html();
+        $('#btnSearch').click(function () {
+            $('#pretime').html(pretime);
+            var searchText = $('#txtKey').val();
+            if (searchText.length == 0) {
+                alert('搜索内容不能为空');
+                $('#txtKey').focus();
+                return false;
+            }
+            var regExp = new RegExp(searchText, 'g');
+            $('#pretime a').each(function () {
+                var html = $(this).html();
+                var _time = $(this).parent().find("strong").text();
+                var newHtml = html.replace(regExp, '<span class="highlight">' + searchText + '</span>');
+                $(this).html(newHtml);
+                flag = 1;
+ 
+            })
+            if (flag) {
+                if ($(".highlight").size() > 1) {
+                    var _top = $(".highlight").eq(0).offset().top;
+                    $("html,body").animate({
+                        "scrollTop": _top
+                    }, 500)
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
