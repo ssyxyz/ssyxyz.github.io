@@ -53,7 +53,7 @@
 <center>
 <a href="./1/index.html" class="layui-btn layui-btn-primary" style="margin-top:15px;">躺在原地恢复体力</a><br>
 <a href="./2/index.html" class="layui-btn layui-btn-primary" style="margin-top:15px;">起身走走碰碰运气</a><br>
-<a href="javascript:;" class="layui-btn layui-btn-primary" style="margin-top:15px;">往下挖挖</a>
+<a href="javascript:suiji1();" class="layui-btn layui-btn-primary" style="margin-top:15px;">往下挖挖</a>
 </center>
             </div>
             <br>
@@ -81,18 +81,14 @@
 </body>
 </html>
 <script src="https://ssyxyz.github.io/island/js/jquery.min.js"></script>
-<script>
-$(function(){
-// 落地页的地址数组
-let links = [
-'./3/1/index.html',
-'./3/2/index.html',
-'./3/3/index.html',
-];
-let r = Math.floor(Math.random()*(links.length));
-// 点击跳转随机落地页
-$('html').on('click', 'a', function(){
-location.href = links[r];
-});
-});
+<script language="javascript">
+	function suiji1(){
+		let links = [
+			'./3/1/index.html',
+			'./3/2/index.html',
+			'./3/3/index.html',
+    ];
+    let r = Math.floor(Math.random()*(links.length));
+    location.href= links[r];
+    }
 </script>
