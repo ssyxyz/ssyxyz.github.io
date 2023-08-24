@@ -37,6 +37,17 @@
     }
     </script>
 
+    <script>
+        // 定义生成元素内容的函数
+        function generate(element, num) {
+            var str = '';
+            for (var j = 1; j <= num; j++) {
+                str += '<span>' + j + '</span>';
+            }
+            element.innerHTML = str;
+        }
+    </script>
+
 </head>
 
 <body id="zlkbbody">
@@ -56,16 +67,22 @@
 					 
 
 <blockquote class="layui-elem-quote">
-			    随机产生一注双色球号码；购买彩票请去线下。
+			    随机产生一注号码；购买彩票请去线下。
 			</blockquote>
             <div class="layui-tab-content">
 
-
-                <div id="red"></div>
-                <div id="blue"></div>
-                <center><button style="height:30px;">&nbsp;&nbsp;&nbsp;开始&nbsp;&nbsp;&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;<button style="height:30px;">&nbsp;&nbsp;&nbsp;停止&nbsp;&nbsp;&nbsp;</button></center>
-
-
+<h3>双色球：</h3>
+<div id="red"></div>
+<div id="blue"></div>
+<br>
+<center><button style="height:30px;" class="start">&nbsp;&nbsp;&nbsp;开始&nbsp;&nbsp;&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;<button style="height:30px;" class="end">&nbsp;&nbsp;&nbsp;停止&nbsp;&nbsp;&nbsp;</button></center>
+<br>
+<h3>大乐透：</h3>
+<div id="red2"></div>
+<div id="blue2"></div>
+<br>
+<center><button style="height:30px;" class="start2">&nbsp;&nbsp;&nbsp;开始&nbsp;&nbsp;&nbsp;</button>&nbsp;&nbsp;&nbsp;&nbsp;<button style="height:30px;" class="end2">&nbsp;&nbsp;&nbsp;停止&nbsp;&nbsp;&nbsp;</button></center>
+<br>
 
             </div>
         </div>
@@ -74,66 +91,124 @@
 					 
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+
 <div class="fly-footer">
 	</div>
-<script src="./css/layui/layui.js"></script>
-<script>
-    var red = document.getElementById('red')
-    var blue = document.getElementById('blue')
-    var start = document.getElementsByTagName('button')[0];
-    var end = document.getElementsByTagName('button')[1];
-    function generate(element, num) {
-        var str = '';
-        for (var j = 1; j <= num; j++) {
-            str += '<span>' + j + '</span>'
+
+    <script>
+        var red = document.getElementById('red');
+        var blue = document.getElementById('blue');
+        var start = document.querySelector('.start');
+        var end = document.querySelector('.end');
+
+        generate(red, 33);
+        generate(blue, 16);
+        function ranDom(start, end) {
+            var _a = end - start + 1;
+            return Math.floor(Math.random() * _a + start)
         }
-        element.innerHTML = str;
-    }
-    generate(red, 33);
-    generate(blue, 16);
-    function ranDom(start, end) {
-        var _a = end - start + 1;
-        return Math.floor(Math.random() * _a + start)
-    }
-    function arrAy(num, start, end) {
-        var _b = [];
-        while (_b.length < num) {
-            var _c = ranDom(start, end)
-            if (_b.indexOf(_c) === -1) {
-                _b.push(_c);
+        function arrAy(num, start, end) {
+            var _b = [];
+            while (_b.length < num) {
+                var _c = ranDom(start, end)
+                if (_b.indexOf(_c) === -1) {
+                    _b.push(_c);
+                }
+            }
+            return _b;
+        }
+        function backGround(arr, color, element) {
+            for (var i = 0; i < element.length; i++) {
+                element[i].style.background = '';
+            }
+            for (var j = 0; j < arr.length; j++) {
+                element[arr[j]-1].style.background = color;
             }
         }
-        return _b;
-    }
-    function backGround(arr, color, element) {
-        for (var i = 0; i < element.length; i++) {
-            element[i].style.background = '';
+        function select() {
+            var _d = arrAy(6, 1, 33)
+            var _e = arrAy(1, 1, 16)
+            backGround(_d, 'red', red.children);
+            backGround(_e, 'blue', blue.children);
         }
-        for (var j = 0; j < arr.length; j++) {
-            element[arr[j]-1].style.background = color;
+        var time = null;
+        start.onclick = function () {
+            if (time === null) {
+                time = setInterval(function () {
+                    // 调用第一个脚本的逻辑
+                    select();
+                }, 60);
+            }
+        };
+        end.onclick = function () {
+            clearInterval(time);
+            time = null;
+        };
+    </script>
+    
+    <script>
+        var red2 = document.getElementById('red2');
+        var blue2 = document.getElementById('blue2');
+        var start2 = document.querySelector('.start2');
+        var end2 = document.querySelector('.end2');
+    
+        // 定义生成元素内容的函数
+
+        
+        // 生成元素内容
+        generate(red2, 35);
+        generate(blue2, 12);
+    
+        // 定义随机数生成函数
+        function ranDom2(start2, end2) {
+            var _a = end2 - start2 + 1;
+            return Math.floor(Math.random() * _a + start2);
         }
-    }
-    function select() {
-        var _d = arrAy(6, 1, 33)
-        var _e = arrAy(1, 1, 16)
-        backGround(_d, 'red', red.children);
-        backGround(_e, 'blue', blue.children);
-    }
-    var time = null
-    start.onclick = function () {
-        if (time == null) {
-            time = setInterval(function () {
-                select()
-            }, 60)
+    
+        // 定义生成随机数组的函数
+        function arrAy2(num, start2, end2) {
+            var _b = [];
+            while (_b.length < num) {
+                var _c = ranDom2(start2, end2);
+                if (_b.indexOf(_c) === -1) {
+                    _b.push(_c);
+                }
+            }
+            return _b;
         }
-    }
-    end.onclick = function () {
-        clearInterval(time)
-        time = null
-    }
-</script>
+    
+        // 定义设置背景颜色的函数
+        function backGround2(arr, color, element) {
+            for (var i = 0; i < element.length; i++) {
+                element[i].style.background = '';
+            }
+            for (var j = 0; j < arr.length; j++) {
+                element[arr[j] - 1].style.background = color;
+            }
+        }
+    
+        // 定义选择逻辑
+        function select2() {
+            var _d = arrAy2(5, 1, 35);
+            var _e = arrAy2(2, 1, 12);
+            backGround2(_d, 'red', red2.children);
+            backGround2(_e, 'blue', blue2.children);
+        }
+    
+        var time2 = null;
+        start2.onclick = function () {
+            if (time2 === null) {
+                time2 = setInterval(function () {
+                    // 调用第二个脚本的逻辑
+                    select2();
+                }, 60);
+            }
+        };
+        end2.onclick = function () {
+            clearInterval(time2);
+            time2 = null;
+        };
+    </script>
+<script src="./css/layui/layui.js"></script>
 </body>
 </html>
