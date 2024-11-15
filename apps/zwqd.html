@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>知网，启动！</title>
+<style>
+html,body,div,h1,*{margin:0;padding:0;}
+body{
+	background-color:#fefefe;
+	color:#333;
+	animation: fadeInAnimation ease 3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+	overflow: hidden;
+}
+img{
+	width:100%;
+	height:100%;
+	vertical-align:middle;
+	margin:auto;position:absolute;top:0;left:0;right:0;bottom:0;
+}
+
+@keyframes fadeInAnimation { 
+    0% { 
+        opacity: 0; 
+    } 
+    100% { 
+        opacity: 1; 
+     } 
+}
+</style>
+</head>
+
+<body>
+	<center>
+	<img id="op" src="./ZWQD.jpg">
+	</center>
+<!--<audio autoplay  ><source src="./OP.mp3"></audio>-->
+<script>
+// 等待动画结束（*秒）后执行跳转
+setTimeout(function() {
+    window.location.href = 'https://www.cnki.net';
+}, 3000); // 1000毫秒等于1秒
+</script>
+</body>
+</html>
