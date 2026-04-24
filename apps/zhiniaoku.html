@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纸尿裤价格比较器</title>
+    <style>
+        :root {
+            --bg: #fdf6f0;
+            --card-bg: #ffffff;
+            --primary: #ff8c7a;
+            --primary-hover: #e67a6a;
+            --accent-blue: #7eb8da;
+            --accent-yellow: #ffe9c4;
+            --text: #4a3f3b;
+            --text-light: #7a6e68;
+            --border: #f0e4da;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.10);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --highlight: #e8f8e8;
+            --highlight-border: #7ccf7c;
+            --tag-bg: #fff5f3;
+            --tag-text: #e07b6a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 15% 20%, rgba(255, 180, 160, 0.15) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 75%, rgba(160, 200, 230, 0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 220, 180, 0.08) 0%, transparent 60%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px 32px 28px;
+            width: 100%;
+            max-width: 580px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ffb3a0, #ffccb8, #ffd6c8, #ffccb8, #ffb3a0);
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+            margin-top: 4px;
+        }
+        .header .icon-row {
+            font-size: 44px;
+            line-height: 1;
+            margin-bottom: 8px;
+            animation: bounce-icon 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        @keyframes bounce-icon {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+            70% {
+                transform: translateY(-7px);
+            }
+        }
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.5px;
+            margin: 0;
+            line-height: 1.3;
+        }
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* 表格区域 */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 22px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background: #fefcf9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 380px;
+        }
+        thead th {
+            background: #fff9f5;
+            padding: 14px 12px;
+            font-weight: 650;
+            font-size: 0.95rem;
+            color: #5c4a3f;
+            text-align: center;
+            border-bottom: 2px solid #f0e0d2;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+        thead th:first-child {
+            border-radius: 12px 0 0 0;
+            width: 80px;
+            min-width: 56px;
+        }
+        thead th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+        thead th .col-icon {
+            display: inline-block;
+            margin-right: 3px;
+            font-size: 1rem;
+        }
+        tbody td {
+            padding: 10px 10px;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 1px solid #f5ede4;
+            transition: background 0.2s;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        tbody tr:hover td {
+            background: #fffdf9;
+        }
+        tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+        tbody tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
+        }
+        .row-label {
+            font-weight: 650;
+            font-size: 1.05rem;
+            color: #5c4a3f;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            position: relative;
+        }
+        .row-label .label-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+        .dot-1 {
+            background: #ffb09c;
+        }
+        .dot-2 {
+            background: #8cc4e0;
+        }
+        .dot-3 {
+            background: #f5c98e;
+        }
+        tbody td input {
+            width: 100%;
+            max-width: 150px;
+            padding: 11px 14px;
+            border: 2px solid #ece3d8;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            font-family: inherit;
+            transition: var(--transition);
+            background: #fffefc;
+            color: #4a3f3b;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        tbody td input::-webkit-outer-spin-button,
+        tbody td input::-webkit-inner-spin-button {
+            opacity: 0.6;
+            height: 30px;
+        }
+        tbody td input:focus {
+            outline: none;
+            border-color: #ffb09c;
+            box-shadow: 0 0 0 4px rgba(255, 140, 122, 0.1);
+            background: #fff;
+            transform: translateY(-1px);
+        }
+        tbody td input::placeholder {
+            color: #c4b8ae;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+        .input-unit {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: #a09085;
+            margin-left: 2px;
+            font-weight: 500;
+            min-width: 18px;
+        }
+
+        /* 按钮 */
+        .btn-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-compare {
+            display: inline-block;
+            padding: 14px 42px;
+            font-size: 1.1rem;
+            font-weight: 650;
+            letter-spacing: 0.6px;
+            color: #fff;
+            background: linear-gradient(135deg, #ff9a85, #ff7d68);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 22px rgba(255, 120, 100, 0.30);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .btn-compare:hover {
+            background: linear-gradient(135deg, #ff8c75, #ff6d57);
+            box-shadow: 0 8px 28px rgba(255, 110, 90, 0.38);
+            transform: translateY(-2px);
+        }
+        .btn-compare:active {
+            transform: scale(0.96);
+            box-shadow: 0 3px 12px rgba(255, 100, 80, 0.25);
+            transition: 0.1s;
+        }
+        .btn-compare .btn-icon {
+            display: inline-block;
+            margin-right: 6px;
+            font-size: 1.2rem;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+
+        /* 结果区域 */
+        .result-area {
+            min-height: 50px;
+            transition: var(--transition);
+        }
+        .result-card {
+            background: #fffdf9;
+            border: 1.5px solid #f0e4d8;
+            border-radius: var(--radius-sm);
+            padding: 18px 20px;
+            line-height: 1.8;
+            color: var(--text);
+            font-size: 0.98rem;
+            letter-spacing: 0.3px;
+            animation: fadeInUp 0.4s ease-out;
+            position: relative;
+        }
+        .result-card.best-highlight {
+            border-color: #c8e8c8;
+            background: #fafff8;
+            box-shadow: 0 0 0 6px rgba(120, 200, 120, 0.06);
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .result-card .price-per-sheet {
+            font-weight: 650;
+            color: #4a3f3b;
+        }
+        .result-card .best-badge {
+            display: inline-block;
+            background: #e8f8e8;
+            color: #3a8a3a;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 4px;
+            letter-spacing: 0.4px;
+            animation: pulse-badge 1.8s ease-in-out infinite;
+            white-space: nowrap;
+        }
+        @keyframes pulse-badge {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(100, 190, 100, 0.35);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(100, 190, 100, 0);
+            }
+        }
+        .result-card .recommend-line {
+            font-weight: 700;
+            color: #3a6a3a;
+            margin-top: 6px;
+            font-size: 1.02rem;
+            letter-spacing: 0.4px;
+        }
+        .result-card .recommend-line .star {
+            display: inline-block;
+            color: #f5a623;
+            margin-right: 2px;
+            animation: sparkle 1.2s ease-in-out infinite;
+        }
+        @keyframes sparkle {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.25);
+            }
+        }
+        .result-error {
+            color: #c0392b;
+            background: #fff5f5;
+            border: 1.5px solid #fdd;
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            animation: fadeInUp 0.35s ease-out;
+        }
+        .result-empty {
+            color: #b0a59c;
+            text-align: center;
+            padding: 16px;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 14px 20px;
+                border-radius: 16px;
+            }
+            .container::before {
+                height: 4px;
+                border-radius: 16px 16px 0 0;
+            }
+            .header h1 {
+                font-size: 1.35rem;
+            }
+            .header .icon-row {
+                font-size: 34px;
+            }
+            table {
+                min-width: 300px;
+                font-size: 0.88rem;
+            }
+            thead th {
+                padding: 10px 6px;
+                font-size: 0.82rem;
+            }
+            tbody td {
+                padding: 7px 6px;
+            }
+            tbody td input {
+                padding: 9px 8px;
+                font-size: 0.9rem;
+                max-width: 110px;
+                border-radius: 8px;
+            }
+            .btn-compare {
+                padding: 12px 30px;
+                font-size: 1rem;
+                border-radius: 40px;
+            }
+            .result-card {
+                padding: 14px 14px;
+                font-size: 0.9rem;
+                line-height: 1.7;
+            }
+            .row-label {
+                font-size: 0.9rem;
+            }
+            .row-label .label-dot {
+                width: 8px;
+                height: 8px;
+                margin-right: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <span class="icon-row">👶🍼</span>
+            <h1>纸尿裤价格比较器</h1>
+            <p class="subtitle">输入价格与片数，轻松找到最划算的选择</p>
+        </div>
+
+        <!-- 表格 -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>🧷 纸尿裤</th>
+                        <th><span class="col-icon">💰</span>价格（元）</th>
+                        <th><span class="col-icon">📦</span>片数（片）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="row-label"><span class="label-dot dot-1"></span>一</td>
+                        <td><input type="number" id="price1" placeholder="例如 89.90" step="0.01" min="0" inputmode="decimal"></td>
+                        <td><input type="number" id="count1" placeholder="例如 60" step="1" min="1" inputmode="numeric"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-label"><span class="label-dot dot-2"></span>二</td>
+                        <td><input type="number" id="price2" placeholder="例如 75.00" step="0.01" min="0" inputmode="decimal"></td>
+                        <td><input type="number" id="count2" placeholder="例如 50" step="1" min="1" inputmode="numeric"></td>
+                    </tr>
+                    <tr>
+                        <td class="row-label"><span class="label-dot dot-3"></span>三</td>
+                        <td><input type="number" id="price3" placeholder="例如 108.00" step="0.01" min="0" inputmode="decimal"></td>
+                        <td><input type="number" id="count3" placeholder="例如 72" step="1" min="1" inputmode="numeric"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 按钮 -->
+        <div class="btn-wrapper">
+            <button class="btn-compare" id="btnCompare" title="点击比较三种纸尿裤的单价">
+                <span class="btn-icon">🔍</span>帮我比较
+            </button>
+        </div>
+
+        <!-- 结果区域 -->
+        <div class="result-area" id="resultArea">
+            <p class="result-empty">📋 填写上方表格后点击按钮，查看比较结果</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 获取DOM元素
+            const price1Input = document.getElementById('price1');
+            const count1Input = document.getElementById('count1');
+            const price2Input = document.getElementById('price2');
+            const count2Input = document.getElementById('count2');
+            const price3Input = document.getElementById('price3');
+            const count3Input = document.getElementById('count3');
+            const btnCompare = document.getElementById('btnCompare');
+            const resultArea = document.getElementById('resultArea');
+
+            // 纸尿裤数据配置
+            const diapers = [
+                { id: 1, label: '一', priceInput: price1Input, countInput: count1Input },
+                { id: 2, label: '二', priceInput: price2Input, countInput: count2Input },
+                { id: 3, label: '三', priceInput: price3Input, countInput: count3Input },
+            ];
+
+            /**
+             * 获取有效的纸尿裤数据（价格和片数都填写且有效）
+             * @returns {Array} 有效数据数组
+             */
+            function getValidData() {
+                const valid = [];
+                for (const d of diapers) {
+                    const priceRaw = d.priceInput.value.trim();
+                    const countRaw = d.countInput.value.trim();
+
+                    // 跳过两者都为空的
+                    if (priceRaw === '' && countRaw === '') {
+                        continue;
+                    }
+
+                    const price = parseFloat(priceRaw);
+                    const count = parseFloat(countRaw);
+
+                    // 验证数字有效性
+                    if (isNaN(price) || isNaN(count)) {
+                        continue;
+                    }
+                    if (price < 0 || count <= 0) {
+                        continue;
+                    }
+
+                    const pricePerSheet = price / count;
+                    valid.push({
+                        id: d.id,
+                        label: d.label,
+                        price: price,
+                        count: count,
+                        pricePerSheet: pricePerSheet,
+                    });
+                }
+                return valid;
+            }
+
+            /**
+             * 渲染结果
+             */
+            function renderResult() {
+                const validData = getValidData();
+
+                // 没有有效数据
+                if (validData.length === 0) {
+                    resultArea.innerHTML =
+                        '<p class="result-error">⚠️ 请至少填写一种纸尿裤的<strong>价格</strong>和<strong>片数</strong>（片数需大于0），再进行比较哦～</p>';
+                    return;
+                }
+
+                // 只有一种有效数据
+                if (validData.length === 1) {
+                    const d = validData[0];
+                    resultArea.innerHTML = `
+                                <div class="result-card">
+                                    <p>${d.label}、纸尿裤约为<span class="price-per-sheet">${d.pricePerSheet.toFixed(2)}</span>元每片。</p>
+                                    <p style="color:#a09085;margin-top:4px;">💡 仅填写了一种纸尿裤的数据，无法进行比较。请再填写至少一种以获取推荐。</p>
+                                </div>
+                            `;
+                    return;
+                }
+
+                // 找出最低单价
+                let minPricePerSheet = Infinity;
+                for (const d of validData) {
+                    if (d.pricePerSheet < minPricePerSheet) {
+                        minPricePerSheet = d.pricePerSheet;
+                    }
+                }
+
+                // 找出所有最低单价的纸尿裤（处理并列情况）
+                const bestOnes = validData.filter(d => Math.abs(d.pricePerSheet - minPricePerSheet) < 0.0001);
+
+                // 构建结果HTML
+                let linesHtml = '';
+                for (const d of validData) {
+                    const isBest = bestOnes.some(b => b.id === d.id);
+                    const bestClass = isBest ? ' price-per-sheet' : '';
+                    const bestBadge = isBest ? ' <span class="best-badge">🏆 最低价</span>' : '';
+                    linesHtml +=
+                        `<p>${d.label}、纸尿裤约为<span class="${bestClass}">${d.pricePerSheet.toFixed(2)}</span>元每片。${bestBadge}</p>`;
+                }
+
+                // 推荐语句
+                let recommendHtml = '';
+                if (bestOnes.length === 1) {
+                    recommendHtml =
+                        `<p class="recommend-line"><span class="star">⭐</span>推荐购买<strong>${bestOnes[0].label}纸尿裤</strong>，最便宜。</p>`;
+                } else {
+                    const labels = bestOnes.map(b => b.label).join('和');
+                    recommendHtml =
+                        `<p class="recommend-line"><span class="star">⭐</span>推荐购买<strong>${labels}纸尿裤</strong>，价格相同，并列最便宜。</p>`;
+                }
+
+                resultArea.innerHTML = `
+                            <div class="result-card best-highlight">
+                                ${linesHtml}
+                                ${recommendHtml}
+                            </div>
+                        `;
+            }
+
+            /**
+             * 处理比较按钮点击
+             */
+            function handleCompare() {
+                // 轻微的按钮反馈动画
+                btnCompare.style.transform = 'scale(0.94)';
+                setTimeout(() => {
+                    btnCompare.style.transform = '';
+                }, 120);
+
+                renderResult();
+
+                // 滚动到结果区域（如果在视口外）
+                resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // 绑定按钮点击事件
+            btnCompare.addEventListener('click', handleCompare);
+
+            // 支持键盘回车触发比较（在任意输入框中按回车）
+            const allInputs = [price1Input, count1Input, price2Input, count2Input, price3Input, count3Input];
+            allInputs.forEach(input => {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCompare();
+                    }
+                });
+            });
+
+            // 输入时自动移除之前的结果高亮（温和提示用户重新计算）
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // 如果结果区有卡片内容，变淡提示用户重新计算
+                    const card = resultArea.querySelector('.result-card');
+                    if (card && !card.classList.contains('stale')) {
+                        card.style.opacity = '0.55';
+                        card.style.transition = 'opacity 0.35s';
+                        card.classList.add('stale');
+                    }
+                });
+                input.addEventListener('focus', function() {
+                    const card = resultArea.querySelector('.result-card.stale');
+                    if (card) {
+                        card.style.opacity = '1';
+                        card.classList.remove('stale');
+                    }
+                });
+            });
+
+            // 页面加载时自动聚焦第一个价格输入框
+            setTimeout(() => {
+                price1Input.focus();
+            }, 400);
+
+            console.log('👶🍼 纸尿裤价格比较器已就绪');
+            console.log('  填写价格和片数，点击"帮我比较"即可查看结果');
+            console.log('  支持离线运行 ✨');
+        })();
+    </script>
+</body>
+</html>
