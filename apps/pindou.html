@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+  <title>拼豆对照板 · 50×50</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #2b2b2b;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    #app {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 左上角锁定按钮 */
+    #lockBtn {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      width: 52px;
+      height: 52px;
+      background: rgba(30, 30, 30, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: background 0.2s;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    #lockBtn:active {
+      background: rgba(50, 50, 50, 0.9);
+    }
+
+    /* 控制面板 */
+    #controls {
+      position: fixed;
+      top: 12px;
+      left: 76px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 8px 14px;
+      border-radius: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: opacity 0.3s, transform 0.3s;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    #controls.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-10px);
+    }
+
+    .color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+      background: #888;
+    }
+    .color-swatch:active {
+      transform: scale(1.15);
+    }
+    .color-swatch.selected {
+      border-color: #ffffff;
+      box-shadow: 0 0 12px rgba(255,255,255,0.7);
+      transform: scale(1.1);
+    }
+
+    #showAllBtn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+    #showAllBtn:active {
+      background: rgba(255,255,255,0.3);
+    }
+    #showAllBtn.active-highlight {
+      background: rgba(255,255,255,0.25);
+      border-color: white;
+    }
+
+    #boardContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+    }
+
+    /* 🔥 关键修改：50×50 网格，物理尺寸精确匹配 13cm × 13cm */
+    #board {
+      width: 676px;   /* 根据 iPad Air 5 屏幕 PPI 反推的 13cm */
+      height: 676px;
+      display: grid;
+      grid-template-columns: repeat(50, 1fr);
+      grid-template-rows: repeat(50, 1fr);
+      gap: 0;
+      background: #1a1a1a;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.2), 0 20px 40px rgba(0,0,0,0.6);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .cell {
+      width: 100%;
+      height: 100%;
+      border: 0.5px solid rgba(255, 255, 255, 0.1); /* 细边框更贴近真实板子 */
+      background: #2d2d2d;
+      transition: opacity 0.15s ease;
+      will-change: opacity;
+    }
+
+    /* 全屏触摸遮罩 */
+    #lockOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 998;
+      background: transparent;
+      pointer-events: none;
+    }
+    #lockOverlay.active {
+      pointer-events: auto;
+      background: rgba(0,0,0,0.01);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="lockBtn" title="上锁/解锁">🔒</div>
+    <div id="controls">
+      <div id="colorPalette" style="display:flex; gap:8px; align-items:center;"></div>
+      <button id="showAllBtn">🌈 完整颜色</button>
+    </div>
+    <div id="boardContainer">
+      <div id="board"></div>
+    </div>
+    <div id="lockOverlay"></div>
+  </div>
+
+  <script>
+    (function() {
+      // ========== 🔥 修改点 1：网格尺寸改为 50 ==========
+      const GRID_SIZE = 50;
+
+      // 颜色定义（可根据你的豆子颜色扩展）
+      const COLOR_PALETTE = {
+        white:  '#FFFFFF',
+        black:  '#1E1E1E',
+        red:    '#E84040',
+        pink:   '#FFB6C1',
+        yellow: '#FFE135',
+        blue:   '#6495ED',
+        green:  '#77DD77',
+        purple: '#C9A0DC',
+        orange: '#FFA500',
+        brown:  '#8B4513',
+        gray:   '#A9A9A9',
+        cyan:   '#00CED1'
+      };
+
+      // 🔥 修改点 2：生成 50×50 的示例图案（可替换为你自己的）
+      function createSamplePattern() {
+        const pattern = [];
+        const colors = Object.keys(COLOR_PALETTE);
+        for (let r = 0; r < GRID_SIZE; r++) {
+          const row = [];
+          for (let c = 0; c < GRID_SIZE; c++) {
+            // 生成一个简单的圆形渐变图案，方便测试对齐
+            const cx = 24.5, cy = 24.5; // 中心
+            const dist = Math.sqrt((c - cx) ** 2 + (r - cy) ** 2);
+            if (dist < 5) {
+              row.push('white');
+            } else if (dist < 12) {
+              row.push('yellow');
+            } else if (dist < 18) {
+              row.push('orange');
+            } else if (dist < 23) {
+              row.push('red');
+            } else {
+              row.push(null); // 空板
+            }
+          }
+          pattern.push(row);
+        }
+        return pattern;
+      }
+
+      let pattern = createSamplePattern();
+
+      // 状态
+      let locked = true;
+      let highlightColor = null;   // null 表示完整颜色
+
+      // DOM 元素
+      const lockBtn = document.getElementById('lockBtn');
+      const controls = document.getElementById('controls');
+      const colorPaletteContainer = document.getElementById('colorPalette');
+      const showAllBtn = document.getElementById('showAllBtn');
+      const boardEl = document.getElementById('board');
+      const lockOverlay = document.getElementById('lockOverlay');
+
+      const cellElements = [];
+
+      function buildBoard() {
+        boardEl.innerHTML = '';
+        for (let r = 0; r < GRID_SIZE; r++) {
+          const rowCells = [];
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+            boardEl.appendChild(cell);
+            rowCells.push(cell);
+          }
+          cellElements.push(rowCells);
+        }
+      }
+
+      function applyCellColors() {
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const colorName = pattern[r][c];
+            const cell = cellElements[r][c];
+            if (colorName && COLOR_PALETTE[colorName]) {
+              cell.style.backgroundColor = COLOR_PALETTE[colorName];
+            } else {
+              cell.style.backgroundColor = '#2d2d2d';
+            }
+          }
+        }
+      }
+
+      function applyHighlight() {
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const cell = cellElements[r][c];
+            const colorName = pattern[r][c];
+            if (highlightColor === null) {
+              cell.style.opacity = '1';
+            } else {
+              cell.style.opacity = (colorName === highlightColor) ? '1' : '0.2';
+            }
+          }
+        }
+      }
+
+      function refreshBoard() {
+        applyCellColors();
+        applyHighlight();
+      }
+
+      function buildColorPalette() {
+        colorPaletteContainer.innerHTML = '';
+        const usedColors = new Set();
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            const color = pattern[r][c];
+            if (color && COLOR_PALETTE[color]) usedColors.add(color);
+          }
+        }
+        const displayColors = usedColors.size > 0 ? Array.from(usedColors) : Object.keys(COLOR_PALETTE);
+        displayColors.forEach(colorName => {
+          const swatch = document.createElement('div');
+          swatch.className = 'color-swatch';
+          swatch.style.backgroundColor = COLOR_PALETTE[colorName];
+          swatch.dataset.color = colorName;
+          swatch.title = colorName;
+          swatch.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (locked) return;
+            setHighlightColor(colorName);
+          });
+          colorPaletteContainer.appendChild(swatch);
+        });
+      }
+
+      function updateColorSwatchSelection() {
+        document.querySelectorAll('.color-swatch').forEach(s => {
+          s.classList.toggle('selected', s.dataset.color === highlightColor);
+        });
+        showAllBtn.classList.toggle('active-highlight', highlightColor === null);
+      }
+
+      function setHighlightColor(colorName) {
+        if (locked) return;
+        highlightColor = colorName;
+        applyHighlight();
+        updateColorSwatchSelection();
+      }
+
+      function clearHighlight() {
+        if (locked) return;
+        highlightColor = null;
+        applyHighlight();
+        updateColorSwatchSelection();
+      }
+
+      function setLocked(state) {
+        locked = state;
+        lockBtn.textContent = locked ? '🔒' : '🔓';
+        controls.classList.toggle('hidden', locked);
+        lockOverlay.classList.toggle('active', locked);
+      }
+
+      function toggleLock() {
+        setLocked(!locked);
+      }
+
+      function setupOverlay() {
+        ['touchstart', 'touchmove', 'touchend', 'click'].forEach(evt => {
+          lockOverlay.addEventListener(evt, (e) => {
+            if (locked) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }, evt.startsWith('touch') ? { passive: false } : false);
+        });
+      }
+
+      function bindEvents() {
+        lockBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleLock();
+        });
+        showAllBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!locked) clearHighlight();
+        });
+        controls.addEventListener('touchstart', (e) => e.stopPropagation());
+        controls.addEventListener('click', (e) => e.stopPropagation());
+      }
+
+      function init() {
+        buildBoard();
+        refreshBoard();
+        buildColorPalette();
+        setupOverlay();
+        bindEvents();
+        setLocked(true);
+        highlightColor = null;
+        applyHighlight();
+        updateColorSwatchSelection();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
