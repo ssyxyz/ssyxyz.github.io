@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-  <title>拼豆对照板 · 50×50</title>
+  <title>拼豆对照板</title>
   <style>
     * {
       margin: 0;
@@ -133,13 +133,13 @@
       padding: 20px;
     }
 
-    /* 🔥 关键修改：50×50 网格，物理尺寸精确匹配 13cm × 13cm */
+    /* 🔥 52×52 网格，物理尺寸匹配 13.52cm × 13.52cm */
     #board {
-      width: 676px;   /* 根据 iPad Air 5 屏幕 PPI 反推的 13cm */
-      height: 676px;
+      width: 741px;   /* 根据 iPad Air 5 屏幕 ppi 计算得出 */
+      height: 741px;
       display: grid;
-      grid-template-columns: repeat(50, 1fr);
-      grid-template-rows: repeat(50, 1fr);
+      grid-template-columns: repeat(52, 1fr);
+      grid-template-rows: repeat(52, 1fr);
       gap: 0;
       background: #1a1a1a;
       box-shadow: 0 0 0 2px rgba(255,255,255,0.2), 0 20px 40px rgba(0,0,0,0.6);
@@ -150,7 +150,7 @@
     .cell {
       width: 100%;
       height: 100%;
-      border: 0.5px solid rgba(255, 255, 255, 0.1); /* 细边框更贴近真实板子 */
+      border: 0.5px solid rgba(255, 255, 255, 0.08); /* 细网格线，52格时更清晰 */
       background: #2d2d2d;
       transition: opacity 0.15s ease;
       will-change: opacity;
@@ -188,10 +188,10 @@
 
   <script>
     (function() {
-      // ========== 🔥 修改点 1：网格尺寸改为 50 ==========
-      const GRID_SIZE = 50;
+      // ========== 🔥 网格改为 52 ==========
+      const GRID_SIZE = 52;
 
-      // 颜色定义（可根据你的豆子颜色扩展）
+      // 颜色定义（可根据实际豆子颜色扩充）
       const COLOR_PALETTE = {
         white:  '#FFFFFF',
         black:  '#1E1E1E',
@@ -207,26 +207,26 @@
         cyan:   '#00CED1'
       };
 
-      // 🔥 修改点 2：生成 50×50 的示例图案（可替换为你自己的）
+      // 🔥 52×52 示例图案（一个简单的圆环 + 中心十字，方便测试对齐）
       function createSamplePattern() {
         const pattern = [];
-        const colors = Object.keys(COLOR_PALETTE);
+        const cx = 25.5, cy = 25.5; // 中心在网格的中间（0-index 所以 25.5 是几何中心）
         for (let r = 0; r < GRID_SIZE; r++) {
           const row = [];
           for (let c = 0; c < GRID_SIZE; c++) {
-            // 生成一个简单的圆形渐变图案，方便测试对齐
-            const cx = 24.5, cy = 24.5; // 中心
             const dist = Math.sqrt((c - cx) ** 2 + (r - cy) ** 2);
-            if (dist < 5) {
-              row.push('white');
-            } else if (dist < 12) {
-              row.push('yellow');
-            } else if (dist < 18) {
-              row.push('orange');
-            } else if (dist < 23) {
-              row.push('red');
+            if (dist < 3) {
+              row.push('white');          // 中心小白点
+            } else if (dist >= 14 && dist < 16) {
+              row.push('cyan');           // 圆环
+            } else if (Math.abs(r - cy) < 1.5 || Math.abs(c - cx) < 1.5) {
+              row.push('yellow');         // 十字准线
+            } else if (dist < 10) {
+              row.push('red');            // 内圈红色
+            } else if (dist < 20) {
+              row.push('blue');           // 中圈蓝色
             } else {
-              row.push(null); // 空板
+              row.push(null);             // 空白区域
             }
           }
           pattern.push(row);
