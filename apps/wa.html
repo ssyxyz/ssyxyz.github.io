@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>VAL SENSE LAB - 无畏契约专属灵敏度生成器</title>
+  <style>
+    :root {
+      --bg: #0b0f13;
+      --surface: #12181d;
+      --surface-2: #182127;
+      --surface-3: #202b31;
+      --line: #2a373e;
+      --text: #f3f5f2;
+      --muted: #95a3a8;
+      --mint: #8bf5c6;
+      --mint-strong: #42d99d;
+      --red: #ff5a65;
+      --amber: #ffca68;
+      --blue: #70b8ff;
+      --shadow: 0 18px 50px rgba(0, 0, 0, .28);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+    button, input, select { font: inherit; letter-spacing: 0; }
+    button { color: inherit; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--mint);
+      outline-offset: 2px;
+    }
+
+    .app { min-height: 100vh; }
+    .topbar {
+      height: 64px;
+      padding: 0 clamp(18px, 4vw, 56px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: rgba(11, 15, 19, .96);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--red);
+      clip-path: polygon(0 0, 43% 0, 50% 42%, 57% 0, 100% 0, 73% 88%, 53% 88%, 50% 72%, 47% 88%, 27% 88%);
+    }
+    .brand strong { display: block; font-size: 14px; font-weight: 700; }
+    .brand span { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .top-status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint-strong); box-shadow: 0 0 0 4px rgba(66, 217, 157, .12); }
+
+    .shell {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: calc(100vh - 64px);
+    }
+    .sidebar {
+      border-right: 1px solid var(--line);
+      padding: 28px 22px;
+      background: #0e1317;
+    }
+    .side-kicker { color: var(--muted); font-size: 11px; text-transform: uppercase; margin-bottom: 12px; }
+    .progress-list { display: grid; gap: 8px; }
+    .progress-item {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 10px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+    .progress-item:hover { background: var(--surface-2); }
+    .progress-item.active { background: var(--surface-3); }
+    .step-no {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .progress-item.active .step-no { color: #07110d; background: var(--mint); border-color: var(--mint); }
+    .progress-item.done .step-no { color: var(--mint); border-color: var(--mint-strong); }
+    .progress-name { font-size: 13px; }
+    .progress-state { color: var(--muted); font-size: 11px; }
+    .side-fact {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.75;
+    }
+    .formula { color: var(--text); font-variant-numeric: tabular-nums; }
+
+    .main { min-width: 0; padding: clamp(24px, 4vw, 56px); }
+    .view { display: none; animation: enter .22s ease-out; }
+    .view.active { display: block; }
+    @keyframes enter { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto !important; } }
+
+    .page-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 28px; }
+    .eyebrow { color: var(--mint); font-size: 11px; text-transform: uppercase; margin-bottom: 8px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(28px, 4vw, 48px); line-height: 1.05; margin-bottom: 12px; font-weight: 750; max-width: 780px; }
+    h2 { font-size: 24px; margin-bottom: 8px; }
+    h3 { font-size: 15px; margin-bottom: 6px; }
+    .lead { color: var(--muted); line-height: 1.7; max-width: 720px; margin-bottom: 0; }
+    .version-badge { flex: 0 0 auto; padding: 8px 10px; border: 1px solid var(--line); color: var(--muted); font-size: 11px; border-radius: 4px; }
+
+    .setup-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 28px; }
+    .section { padding: 22px 0; border-top: 1px solid var(--line); }
+    .section:first-child { border-top: 0; padding-top: 0; }
+    .section-title { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; margin-bottom: 16px; }
+    .section-title span { color: var(--muted); font-size: 11px; }
+    .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .field label, .group-label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+    .control {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 12px;
+    }
+    .control:hover { border-color: #41515a; }
+    .field-note { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+    .segments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .segments.two { grid-template-columns: repeat(2, 1fr); }
+    .segment {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--surface);
+      cursor: pointer;
+      padding: 8px 6px;
+      font-size: 12px;
+    }
+    .segment:hover { background: var(--surface-2); }
+    .segment.selected { border-color: var(--mint-strong); background: rgba(66, 217, 157, .1); color: var(--mint); }
+    .segment small { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; }
+
+    .baseline-panel {
+      min-height: 100%;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .baseline-label { color: var(--muted); font-size: 12px; }
+    .baseline-value { display: flex; align-items: baseline; gap: 8px; margin: 10px 0 24px; }
+    .baseline-value strong { font-size: clamp(42px, 6vw, 68px); line-height: 1; font-variant-numeric: tabular-nums; }
+    .baseline-value span { color: var(--muted); }
+    .range-track { height: 8px; background: #263138; position: relative; margin: 14px 0 8px; border-radius: 2px; }
+    .range-zone { position: absolute; left: 20%; width: 50%; height: 100%; background: rgba(112, 184, 255, .35); }
+    .range-pin { position: absolute; top: -5px; width: 3px; height: 18px; background: var(--mint); left: 40%; }
+    .range-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
+    .metric-list { margin: 26px 0; border-top: 1px solid var(--line); }
+    .metric-row { display: flex; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .metric-row span { color: var(--muted); }
+    .metric-row strong { font-variant-numeric: tabular-nums; font-weight: 650; }
+    .primary, .secondary, .danger {
+      min-height: 44px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      padding: 0 16px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+    .primary { background: var(--mint); color: #07110d; }
+    .primary:hover { background: #a4f9d4; }
+    .secondary { background: var(--surface-2); border-color: var(--line); color: var(--text); }
+    .secondary:hover { background: var(--surface-3); }
+    .danger { background: rgba(255, 90, 101, .12); border-color: rgba(255, 90, 101, .4); color: #ff8f96; }
+    .full { width: 100%; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .test-layout { display: grid; gap: 18px; }
+    .test-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+    .test-tab { border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 14px 12px; color: var(--muted); cursor: pointer; text-align: left; }
+    .test-tab strong { display: block; color: var(--text); margin-bottom: 3px; font-size: 13px; }
+    .test-tab.active { border-bottom-color: var(--mint); color: var(--mint); }
+    .test-tab.done strong::after { content: "  已完成"; color: var(--mint); font-size: 10px; font-weight: 500; }
+    .arena-wrap { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: #0d1519; box-shadow: var(--shadow); }
+    #arena {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      min-height: 280px;
+      max-height: 680px;
+      display: block;
+      cursor: none;
+      touch-action: none;
+    }
+    .arena-hud { position: absolute; inset: 0; pointer-events: none; }
+    .hud-top { display: flex; justify-content: space-between; gap: 14px; padding: 14px; }
+    .hud-chip { min-width: 90px; padding: 8px 10px; background: rgba(6, 10, 12, .78); border: 1px solid rgba(255,255,255,.12); border-radius: 4px; }
+    .hud-chip span { display: block; color: #98a8ad; font-size: 10px; }
+    .hud-chip strong { color: #f4f7f5; font-size: 18px; font-variant-numeric: tabular-nums; }
+    .countdown {
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(5, 8, 10, .5);
+      font-size: clamp(64px, 12vw, 150px);
+      font-weight: 800;
+      color: #f4f7f5;
+      text-shadow: 0 4px 30px rgba(0,0,0,.4);
+    }
+    .countdown.show { display: grid; }
+    .arena-message {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      padding: 24px;
+      background: rgba(8, 12, 15, .68);
+      pointer-events: auto;
+    }
+    .arena-message.hidden { display: none; }
+    .arena-message strong { font-size: clamp(22px, 4vw, 40px); margin-bottom: 8px; }
+    .arena-message p { color: #aab6ba; margin: 0 0 18px; max-width: 520px; line-height: 1.6; }
+    .arena-message .primary { justify-self: center; }
+    .test-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .test-brief { display: flex; gap: 22px; color: var(--muted); font-size: 12px; }
+    .test-brief strong { color: var(--text); font-variant-numeric: tabular-nums; }
+    .live-strip { flex: 1; height: 5px; background: var(--surface-3); max-width: 340px; border-radius: 2px; overflow: hidden; }
+    .live-strip span { display: block; height: 100%; width: 0; background: var(--mint-strong); transition: width .12s linear; }
+
+    .results-grid { display: grid; grid-template-columns: minmax(300px, .9fr) minmax(0, 1.1fr); gap: 28px; }
+    .result-main { padding: 28px; border: 1px solid var(--mint-strong); background: rgba(66, 217, 157, .06); border-radius: var(--radius); }
+    .result-main .label { color: var(--mint); font-size: 12px; }
+    .sense-output { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 12px 0 4px; }
+    .sense-output > strong { font-size: clamp(56px, 8vw, 92px); line-height: .95; font-variant-numeric: tabular-nums; }
+    .confidence { color: var(--muted); font-size: 11px; text-align: right; padding-bottom: 8px; }
+    .result-meta { color: var(--muted); margin-bottom: 24px; }
+    .copy-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    .copy-value { height: 46px; border: 1px solid var(--line); background: #0d1417; border-radius: 5px; padding: 0 13px; color: var(--text); font-size: 17px; font-variant-numeric: tabular-nums; }
+    .result-spec { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 11px; }
+    .spec-row { display: flex; justify-content: space-between; gap: 16px; }
+    .spec-row span { color: var(--muted); }
+    .spec-row strong { font-variant-numeric: tabular-nums; }
+    .score-panel { padding-top: 4px; }
+    .score-list { display: grid; gap: 20px; margin: 24px 0 28px; }
+    .score-head { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 8px; }
+    .score-head span { color: var(--muted); }
+    .score-head strong { font-variant-numeric: tabular-nums; }
+    .score-bar { height: 8px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
+    .score-bar span { display: block; height: 100%; width: 0; background: var(--blue); transition: width .5s ease; }
+    .score-item:nth-child(2) .score-bar span { background: var(--mint-strong); }
+    .score-item:nth-child(3) .score-bar span { background: var(--amber); }
+    .diagnosis { border-left: 3px solid var(--amber); padding: 3px 0 3px 14px; color: var(--muted); line-height: 1.7; }
+    .diagnosis strong { color: var(--text); }
+    .result-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+
+    .empty-result { padding: 48px 0; color: var(--muted); text-align: center; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .notice { display: none; position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--text); color: #101519; padding: 11px 14px; border-radius: 5px; box-shadow: var(--shadow); font-size: 12px; }
+    .notice.show { display: block; animation: enter .2s ease; }
+
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 12px 18px; position: sticky; top: 64px; z-index: 15; }
+      .side-kicker, .side-fact { display: none; }
+      .progress-list { grid-template-columns: repeat(3, 1fr); }
+      .progress-item { grid-template-columns: 24px 1fr; padding: 8px; }
+      .progress-state { display: none; }
+      .setup-grid, .results-grid { grid-template-columns: 1fr; }
+      .baseline-panel { min-height: auto; }
+    }
+    @media (max-width: 640px) {
+      .topbar { height: 58px; padding: 0 14px; }
+      .brand span, .top-status span { display: none; }
+      .sidebar { top: 58px; }
+      .main { padding: 24px 16px 36px; }
+      .progress-item { min-width: 0; gap: 5px; padding: 7px 4px; }
+      .progress-name { min-width: 0; overflow: hidden; font-size: 11px; white-space: nowrap; }
+      .page-head { align-items: start; flex-direction: column; gap: 12px; }
+      .fields { grid-template-columns: 1fr; }
+      .test-tabs { grid-template-columns: 1fr; }
+      .test-tab { padding: 10px 8px; }
+      #arena { min-height: 250px; aspect-ratio: 4 / 3; }
+      .hud-chip { min-width: 72px; padding: 6px 8px; }
+      .hud-chip strong { font-size: 15px; }
+      .test-footer { align-items: stretch; flex-direction: column; }
+      .live-strip { max-width: none; width: 100%; }
+      .sense-output { align-items: start; flex-direction: column; }
+      .confidence { text-align: left; padding: 0; }
+      .copy-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div><strong>VAL SENSE LAB</strong><span>Personal calibration system</span></div>
+      </div>
+      <div class="top-status"><i class="status-dot" aria-hidden="true"></i><span>本地运行 · 数据不上传</span></div>
+    </header>
+
+    <div class="shell">
+      <aside class="sidebar" aria-label="校准进度">
+        <div class="side-kicker">Calibration flow</div>
+        <nav class="progress-list">
+          <button class="progress-item active" data-view="setup"><span class="step-no">01</span><span class="progress-name">习惯建档</span><span class="progress-state">进行中</span></button>
+          <button class="progress-item" data-view="tests"><span class="step-no">02</span><span class="progress-name">瞄准测试</span><span class="progress-state">3 项</span></button>
+          <button class="progress-item" data-view="results"><span class="step-no">03</span><span class="progress-name">生成结果</span><span class="progress-state">待完成</span></button>
+        </nav>
+        <div class="side-fact">
+          推荐值以 eDPI 为中间量，避免不同鼠标 DPI 造成误判。<br>
+          <span class="formula">eDPI = 鼠标 DPI × 游戏灵敏度</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section id="view-setup" class="view active" aria-labelledby="setup-title">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Step 01 / Profile</div>
+              <h1 id="setup-title">先建立你的瞄准基线</h1>
+              <p class="lead">输入当前设备与持鼠习惯。测试会围绕你的真实基线微调，不会给出脱离肌肉记忆的随机数值。</p>
+            </div>
+            <div class="version-badge">VALORANT 通用灵敏度 · 三位小数</div>
+          </div>
+
+          <div class="setup-grid">
+            <div>
+              <div class="section">
+                <div class="section-title"><h3>设备基线</h3><span>必填</span></div>
+                <div class="fields">
+                  <div class="field">
+                    <label for="dpi">鼠标 DPI</label>
+                    <input id="dpi" class="control" type="number" min="100" max="6400" step="50" value="800" inputmode="numeric">
+                    <p class="field-note">填写鼠标驱动中正在使用的 DPI</p>
+                  </div>
+                  <div class="field">
+                    <label for="currentSens">当前游戏灵敏度</label>
+                    <input id="currentSens" class="control" type="number" min="0.001" max="10" step="0.001" value="0.320" inputmode="decimal">
+                    <p class="field-note">游戏：设置 → 常规 → 鼠标</p>
+                  </div>
+                  <div class="field">
+                    <label for="refreshRate">显示器刷新率</label>
+                    <select id="refreshRate" class="control">
+                      <option value="60">60 Hz</option><option value="75">75 Hz</option><option value="120">120 Hz</option>
+                      <option value="144" selected>144 Hz</option><option value="165">165 Hz</option><option value="240">240 Hz</option><option value="360">360 Hz+</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="mousepad">可用鼠标垫宽度</label>
+                    <input id="mousepad" class="control" type="number" min="15" max="100" step="1" value="45" inputmode="decimal">
+                    <p class="field-note">单位：cm</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title"><h3>屏幕分辨率</h3><span>测试场景按比例校准</span></div>
+                <div class="segments" id="resolutionSegments">
+                  <button class="segment selected" data-value="1080">1080P<small>1920 × 1080</small></button>
+                  <button class="segment" data-value="1440">2K<small>2560 × 1440</small></button>
+                  <button class="segment" data-value="2160">4K<small>3840 × 2160</small></button>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title"><h3>主要发力方式</h3><span>选择最接近的一项</span></div>
+                <div class="segments" id="styleSegments">
+                  <button class="segment" data-value="arm">手臂流<small>大范围移动</small></button>
+                  <button class="segment selected" data-value="hybrid">混合流<small>手臂 + 手腕</small></button>
+                  <button class="segment" data-value="wrist">手腕流<small>小范围快速移动</small></button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="baseline-panel" aria-label="当前基线">
+              <div class="baseline-label">当前有效 DPI</div>
+              <div class="baseline-value"><strong id="baselineEdpi">256</strong><span>eDPI</span></div>
+              <div class="range-track" aria-hidden="true"><span class="range-zone"></span><i class="range-pin" id="baselinePin"></i></div>
+              <div class="range-labels"><span>120</span><span>常用区间 180–360</span><span>520</span></div>
+              <div class="metric-list">
+                <div class="metric-row"><span>每转 360° 移动</span><strong id="baselineCm">51.0 cm</strong></div>
+                <div class="metric-row"><span>分辨率配置</span><strong id="baselineRes">1080P</strong></div>
+                <div class="metric-row"><span>校准策略</span><strong id="baselineStyle">混合控制</strong></div>
+              </div>
+              <button id="beginTests" class="primary full">保存基线并开始测试</button>
+            </aside>
+          </div>
+        </section>
+
+        <section id="view-tests" class="view" aria-labelledby="tests-title">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Step 02 / Aim suite</div>
+              <h2 id="tests-title">Aimlabs 风格内嵌校准</h2>
+              <p class="lead">准星碰到目标即判定，无需点击。请保持浏览器缩放为 100%，每项测试前有独立 3 秒倒计时。</p>
+            </div>
+            <div class="version-badge" id="testDeviceBadge">800 DPI · 1080P · 144 Hz</div>
+          </div>
+
+          <div class="test-layout">
+            <div class="test-tabs" role="tablist" aria-label="测试项目">
+              <button class="test-tab active" data-test="flick" role="tab"><strong>01 触碰反应</strong>20 秒 · 大角度定位</button>
+              <button class="test-tab" data-test="tracking" role="tab"><strong>02 动态追踪</strong>20 秒 · 稳定控制</button>
+              <button class="test-tab" data-test="micro" role="tab"><strong>03 微调切换</strong>18 秒 · 小目标修正</button>
+            </div>
+
+            <div class="arena-wrap">
+              <canvas id="arena" aria-label="瞄准测试区域：移动鼠标控制准星，准星触碰目标即可命中"></canvas>
+              <div class="arena-hud" aria-hidden="true">
+                <div class="hud-top">
+                  <div class="hud-chip"><span>剩余时间</span><strong id="hudTime">20.0</strong></div>
+                  <div class="hud-chip"><span id="hudMetricLabel">命中</span><strong id="hudMetric">0</strong></div>
+                </div>
+                <div class="countdown" id="countdown">3</div>
+              </div>
+              <div class="arena-message" id="arenaMessage">
+                <strong id="arenaMessageTitle">触碰反应</strong>
+                <p id="arenaMessageText">目标会在场景内随机出现。移动准星碰到目标即可得分，不需要点击鼠标。</p>
+                <button id="startTest" class="primary">开始 20 秒测试</button>
+              </div>
+            </div>
+
+            <div class="test-footer">
+              <div class="test-brief"><span>实时效率 <strong id="liveEfficiency">--</strong></span><span>当前得分 <strong id="liveScore">--</strong></span></div>
+              <div class="live-strip" aria-label="测试进度"><span id="testProgress"></span></div>
+              <button id="nextTest" class="secondary" disabled>下一项测试</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-results" class="view" aria-labelledby="results-title">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Step 03 / Result</div>
+              <h2 id="results-title">你的专属灵敏度</h2>
+              <p class="lead">结果由当前肌肉记忆、发力方式、鼠标垫空间和三项测试表现共同计算。</p>
+            </div>
+          </div>
+
+          <div id="emptyResult" class="empty-result">完成三项测试后生成最终数值。</div>
+          <div id="resultContent" class="results-grid" hidden>
+            <section class="result-main" aria-label="推荐灵敏度">
+              <div class="label">VALORANT 瞄准灵敏度</div>
+              <div class="sense-output"><strong id="recommendedSens">0.320</strong><div class="confidence">校准置信度<br><strong id="confidenceValue">高</strong></div></div>
+              <p class="result-meta"><span id="resultDpi">800</span> DPI · 可直接输入游戏</p>
+              <div class="copy-row">
+                <input id="copyValue" class="copy-value" value="0.320" readonly aria-label="推荐灵敏度数值">
+                <button id="copyButton" class="primary">复制数值</button>
+              </div>
+              <div class="result-spec">
+                <div class="spec-row"><span>有效 DPI</span><strong id="resultEdpi">256 eDPI</strong></div>
+                <div class="spec-row"><span>每转 360°</span><strong id="resultCm">51.0 cm</strong></div>
+                <div class="spec-row"><span>开镜灵敏度倍数</span><strong>1.000</strong></div>
+                <div class="spec-row"><span>输入精度</span><strong>三位小数</strong></div>
+              </div>
+            </section>
+
+            <section class="score-panel" aria-label="测试分析">
+              <h3>校准依据</h3>
+              <div class="score-list">
+                <div class="score-item"><div class="score-head"><span>触碰反应</span><strong id="flickScore">0</strong></div><div class="score-bar"><span id="flickBar"></span></div></div>
+                <div class="score-item"><div class="score-head"><span>动态追踪</span><strong id="trackingScore">0</strong></div><div class="score-bar"><span id="trackingBar"></span></div></div>
+                <div class="score-item"><div class="score-head"><span>微调切换</span><strong id="microScore">0</strong></div><div class="score-bar"><span id="microBar"></span></div></div>
+              </div>
+              <div class="diagnosis"><strong id="diagnosisTitle">控制表现平衡。</strong> <span id="diagnosisText">建议先保持推荐值完成 3 局死亡竞赛，再进行不超过 5% 的微调。</span></div>
+              <div class="result-actions">
+                <button id="retestButton" class="secondary">重新测试</button>
+                <button id="resetButton" class="danger">清除全部数据</button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div class="notice" id="notice" role="status" aria-live="polite">已复制</div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+      const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+      const state = {
+        view: 'setup',
+        resolution: 1080,
+        style: 'hybrid',
+        activeTest: 'flick',
+        phase: 'idle',
+        testStart: 0,
+        preStart: 0,
+        duration: 20,
+        target: null,
+        hits: 0,
+        pointer: { x: 0, y: 0, visible: false },
+        lastPointer: null,
+        path: 0,
+        direct: 0,
+        efficiencies: [],
+        reactions: [],
+        trackingInside: 0,
+        trackingTotal: 0,
+        velocitySamples: [],
+        results: {},
+        raf: 0,
+        lastFrame: 0
+      };
+
+      const tests = {
+        flick: { title: '触碰反应', duration: 20, text: '目标会在场景内随机出现。移动准星碰到目标即可得分，不需要点击鼠标。' },
+        tracking: { title: '动态追踪', duration: 20, text: '保持准星跟随移动目标。准星进入目标即开始记录有效追踪时间，不需要按住鼠标。' },
+        micro: { title: '微调切换', duration: 18, text: '小目标会在准星附近连续切换。碰到即命中，用于判断细微修正能力。' }
+      };
+
+      const canvas = $('#arena');
+      const ctx = canvas.getContext('2d');
+
+      function profile() {
+        return {
+          dpi: clamp(Number($('#dpi').value) || 800, 100, 6400),
+          currentSens: clamp(Number($('#currentSens').value) || .32, .001, 10),
+          refresh: Number($('#refreshRate').value) || 144,
+          mousepad: clamp(Number($('#mousepad').value) || 45, 15, 100),
+          resolution: state.resolution,
+          style: state.style
+        };
+      }
+
+      function cm360(edpi) { return 13062.857 / Math.max(edpi, 1); }
+
+      function updateBaseline() {
+        const p = profile();
+        const edpi = p.dpi * p.currentSens;
+        $('#baselineEdpi').textContent = Math.round(edpi);
+        $('#baselineCm').textContent = cm360(edpi).toFixed(1) + ' cm';
+        $('#baselineRes').textContent = p.resolution === 1080 ? '1080P' : p.resolution === 1440 ? '2K' : '4K';
+        $('#baselineStyle').textContent = { arm: '手臂控制', hybrid: '混合控制', wrist: '手腕控制' }[p.style];
+        $('#baselinePin').style.left = clamp((edpi - 120) / 400 * 100, 0, 100) + '%';
+        $('#testDeviceBadge').textContent = `${p.dpi} DPI · ${$('#baselineRes').textContent} · ${p.refresh} Hz`;
+      }
+
+      function setSegment(group, value) {
+        $$('.segment', group).forEach(btn => btn.classList.toggle('selected', btn.dataset.value === String(value)));
+      }
+
+      $('#resolutionSegments').addEventListener('click', e => {
+        const btn = e.target.closest('.segment');
+        if (!btn) return;
+        state.resolution = Number(btn.dataset.value);
+        setSegment($('#resolutionSegments'), state.resolution);
+        updateBaseline();
+      });
+      $('#styleSegments').addEventListener('click', e => {
+        const btn = e.target.closest('.segment');
+        if (!btn) return;
+        state.style = btn.dataset.value;
+        setSegment($('#styleSegments'), state.style);
+        updateBaseline();
+      });
+      ['dpi', 'currentSens', 'refreshRate', 'mousepad'].forEach(id => $('#' + id).addEventListener('input', updateBaseline));
+
+      function showView(view) {
+        state.view = view;
+        $$('.view').forEach(el => el.classList.toggle('active', el.id === 'view-' + view));
+        $$('.progress-item').forEach((el, index) => {
+          const active = el.dataset.view === view;
+          el.classList.toggle('active', active);
+          el.querySelector('.progress-state').textContent = active ? '进行中' : index === 0 ? '已保存' : index === 1 ? `${completedCount()}/3` : state.results.final ? '已生成' : '待完成';
+          el.classList.toggle('done', index === 0 ? view !== 'setup' : index === 1 ? Object.keys(state.results).filter(k => k !== 'final').length === 3 : !!state.results.final);
+        });
+        if (view === 'tests') requestAnimationFrame(resizeCanvas);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+
+      $$('.progress-item').forEach(btn => btn.addEventListener('click', () => {
+        if (state.phase === 'active' || state.phase === 'countdown') return;
+        if (btn.dataset.view === 'results' && !state.results.final) {
+          toast('完成三项测试后生成结果');
+          return;
+        }
+        showView(btn.dataset.view);
+      }));
+
+      $('#beginTests').addEventListener('click', () => {
+        const p = profile();
+        if (!Number.isFinite(p.dpi) || !Number.isFinite(p.currentSens)) return;
+        localStorage.setItem('valSenseProfile', JSON.stringify(p));
+        updateBaseline();
+        showView('tests');
+      });
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.max(1, Math.round(rect.width * dpr));
+        const height = Math.max(1, Math.round(rect.height * dpr));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (!state.pointer.visible) {
+          state.pointer.x = rect.width / 2;
+          state.pointer.y = rect.height / 2;
+        }
+        draw(performance.now());
+      }
+
+      function arenaSize() {
+        const rect = canvas.getBoundingClientRect();
+        return { w: rect.width, h: rect.height };
+      }
+
+      function difficultyScale() {
+        return state.resolution === 1080 ? 1 : state.resolution === 1440 ? .93 : .86;
+      }
+
+      function spawnTarget(mode) {
+        const { w, h } = arenaSize();
+        const margin = Math.max(34, Math.min(w, h) * .09);
+        const scale = difficultyScale();
+        let x, y, r;
+        if (mode === 'micro') {
+          r = clamp(Math.min(w, h) * .027 * scale, 10, 18);
+          const base = state.target || state.pointer;
+          const angle = Math.random() * Math.PI * 2;
+          const dist = clamp(Math.min(w, h) * (.17 + Math.random() * .18), 60, 180);
+          x = clamp(base.x + Math.cos(angle) * dist, margin, w - margin);
+          y = clamp(base.y + Math.sin(angle) * dist, margin, h - margin);
+        } else {
+          r = clamp(Math.min(w, h) * .046 * scale, 16, 29);
+          x = margin + Math.random() * Math.max(1, w - margin * 2);
+          y = margin + Math.random() * Math.max(1, h - margin * 2);
+        }
+        state.target = { x, y, r, born: performance.now() };
+        state.path = 0;
+        state.direct = Math.hypot(x - state.pointer.x, y - state.pointer.y);
+      }
+
+      function resetRun() {
+        state.hits = 0;
+        state.target = null;
+        state.lastPointer = null;
+        state.path = 0;
+        state.direct = 0;
+        state.efficiencies = [];
+        state.reactions = [];
+        state.trackingInside = 0;
+        state.trackingTotal = 0;
+        state.velocitySamples = [];
+        state.lastFrame = 0;
+        $('#hudMetric').textContent = '0';
+        $('#liveEfficiency').textContent = '--';
+        $('#liveScore').textContent = '--';
+        $('#testProgress').style.width = '0%';
+      }
+
+      function selectTest(name) {
+        if (state.phase === 'active' || state.phase === 'countdown') return;
+        state.activeTest = name;
+        const test = tests[name];
+        state.duration = test.duration;
+        $$('.test-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.test === name));
+        $('#arenaMessageTitle').textContent = test.title;
+        $('#arenaMessageText').textContent = test.text;
+        $('#startTest').textContent = state.results[name] ? `重测 ${test.duration} 秒` : `开始 ${test.duration} 秒测试`;
+        $('#hudTime').textContent = test.duration.toFixed(1);
+        $('#hudMetricLabel').textContent = name === 'tracking' ? '追踪率' : '命中';
+        $('#hudMetric').textContent = name === 'tracking' ? '0%' : '0';
+        $('#arenaMessage').classList.remove('hidden');
+        $('#nextTest').disabled = !state.results[name];
+        resetRun();
+        draw(performance.now());
+      }
+
+      $$('.test-tab').forEach(tab => tab.addEventListener('click', () => selectTest(tab.dataset.test)));
+
+      $('#startTest').addEventListener('click', () => {
+        resetRun();
+        state.phase = 'countdown';
+        state.preStart = performance.now();
+        $('#arenaMessage').classList.add('hidden');
+        $('#countdown').classList.add('show');
+        $('#countdown').textContent = '3';
+        cancelAnimationFrame(state.raf);
+        state.raf = requestAnimationFrame(frame);
+      });
+
+      function beginActive(now) {
+        state.phase = 'active';
+        state.testStart = now;
+        state.lastFrame = now;
+        $('#countdown').classList.remove('show');
+        if (state.activeTest !== 'tracking') spawnTarget(state.activeTest);
+      }
+
+      function trackingTarget(now) {
+        const { w, h } = arenaSize();
+        const t = (now - state.testStart) / 1000;
+        const pad = Math.min(w, h) * .13;
+        const spanX = Math.max(30, (w - pad * 2) / 2);
+        const spanY = Math.max(20, (h - pad * 2) / 2);
+        const speed = profile().refresh <= 75 ? .88 : 1;
+        return {
+          x: w / 2 + Math.sin(t * 1.31 * speed) * spanX * .82 + Math.sin(t * 2.73) * spanX * .12,
+          y: h / 2 + Math.sin(t * 1.87 + .7) * spanY * .67 + Math.cos(t * 3.11) * spanY * .11,
+          r: clamp(Math.min(w, h) * .055 * difficultyScale(), 18, 32)
+        };
+      }
+
+      function liveMetrics(now) {
+        if (state.activeTest === 'tracking') {
+          const acc = state.trackingTotal ? state.trackingInside / state.trackingTotal : 0;
+          $('#hudMetric').textContent = Math.round(acc * 100) + '%';
+          $('#liveEfficiency').textContent = Math.round(acc * 100) + '%';
+          $('#liveScore').textContent = Math.round(acc * 100);
+        } else {
+          const avgEff = state.efficiencies.length ? state.efficiencies.reduce((a, b) => a + b, 0) / state.efficiencies.length : 0;
+          const avgRt = state.reactions.length ? state.reactions.reduce((a, b) => a + b, 0) / state.reactions.length : 0;
+          $('#hudMetric').textContent = state.hits;
+          $('#liveEfficiency').textContent = state.efficiencies.length ? Math.round(avgEff * 100) + '%' : '--';
+          $('#liveScore').textContent = state.reactions.length ? Math.round(1000 / Math.max(avgRt, 100) * state.hits * 10) : '--';
+        }
+      }
+
+      function frame(now) {
+        if (state.phase === 'countdown') {
+          const elapsed = now - state.preStart;
+          const remaining = Math.ceil((3000 - elapsed) / 1000);
+          $('#countdown').textContent = remaining > 0 ? remaining : 'GO';
+          draw(now);
+          if (elapsed >= 3000) beginActive(now);
+          state.raf = requestAnimationFrame(frame);
+          return;
+        }
+        if (state.phase !== 'active') return;
+
+        const elapsed = (now - state.testStart) / 1000;
+        const remaining = Math.max(0, state.duration - elapsed);
+        const dt = Math.min(50, Math.max(0, now - state.lastFrame));
+        state.lastFrame = now;
+        $('#hudTime').textContent = remaining.toFixed(1);
+        $('#testProgress').style.width = clamp(elapsed / state.duration * 100, 0, 100) + '%';
+
+        if (state.activeTest === 'tracking') {
+          state.target = trackingTarget(now);
+          state.trackingTotal += dt;
+          const inside = Math.hypot(state.pointer.x - state.target.x, state.pointer.y - state.target.y) <= state.target.r;
+          if (inside) state.trackingInside += dt;
+        }
+        liveMetrics(now);
+        draw(now);
+
+        if (remaining <= 0) {
+          finishTest();
+          return;
+        }
+        state.raf = requestAnimationFrame(frame);
+      }
+
+      function handlePointer(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = clamp(e.clientX - rect.left, 0, rect.width);
+        const y = clamp(e.clientY - rect.top, 0, rect.height);
+        const now = performance.now();
+        state.pointer = { x, y, visible: true };
+        if (state.phase === 'active') {
+          if (state.lastPointer) {
+            const dx = x - state.lastPointer.x;
+            const dy = y - state.lastPointer.y;
+            const dist = Math.hypot(dx, dy);
+            state.path += dist;
+            const dt = Math.max(1, now - state.lastPointer.t);
+            if (dist > .2) state.velocitySamples.push({ vx: dx / dt, vy: dy / dt });
+          }
+          state.lastPointer = { x, y, t: now };
+          if (state.activeTest !== 'tracking' && state.target) {
+            if (Math.hypot(x - state.target.x, y - state.target.y) <= state.target.r) {
+              state.hits += 1;
+              state.reactions.push(now - state.target.born);
+              state.efficiencies.push(clamp(state.direct / Math.max(state.path, state.direct), 0, 1));
+              spawnTarget(state.activeTest);
+            }
+          }
+        }
+        draw(now);
+      }
+
+      canvas.addEventListener('pointermove', handlePointer);
+      canvas.addEventListener('pointerenter', e => { state.pointer.visible = true; handlePointer(e); });
+      canvas.addEventListener('pointerleave', () => { state.pointer.visible = false; draw(performance.now()); });
+
+      function smoothness() {
+        const s = state.velocitySamples;
+        if (s.length < 4) return .5;
+        let changes = 0;
+        let count = 0;
+        for (let i = 1; i < s.length; i++) {
+          const a = s[i - 1], b = s[i];
+          const ma = Math.hypot(a.vx, a.vy), mb = Math.hypot(b.vx, b.vy);
+          if (ma < .02 || mb < .02) continue;
+          const cos = clamp((a.vx * b.vx + a.vy * b.vy) / (ma * mb), -1, 1);
+          changes += Math.acos(cos);
+          count++;
+        }
+        const avgTurn = count ? changes / count : .8;
+        return clamp(1 - avgTurn / 1.5, 0, 1);
+      }
+
+      function calculateTestResult(mode) {
+        if (mode === 'tracking') {
+          const accuracy = state.trackingTotal ? state.trackingInside / state.trackingTotal : 0;
+          const smooth = smoothness();
+          return { score: Math.round(clamp(accuracy * 82 + smooth * 18, 0, 100)), accuracy, smoothness: smooth };
+        }
+        const avgRt = state.reactions.length ? state.reactions.reduce((a, b) => a + b, 0) / state.reactions.length : 2000;
+        const efficiency = state.efficiencies.length ? state.efficiencies.reduce((a, b) => a + b, 0) / state.efficiencies.length : 0;
+        const expectedHits = mode === 'flick' ? 30 : 34;
+        const speedPart = clamp(state.hits / expectedHits, 0, 1);
+        const reactionPart = clamp((mode === 'flick' ? 820 : 650) / avgRt, 0, 1);
+        const score = Math.round(clamp(speedPart * 48 + reactionPart * 27 + efficiency * 25, 0, 100));
+        return { score, hits: state.hits, avgRt, efficiency };
+      }
+
+      function finishTest() {
+        state.phase = 'finished';
+        cancelAnimationFrame(state.raf);
+        const mode = state.activeTest;
+        state.results[mode] = calculateTestResult(mode);
+        localStorage.setItem('valSenseTests', JSON.stringify(state.results));
+        $(`.test-tab[data-test="${mode}"]`).classList.add('done');
+        const r = state.results[mode];
+        $('#arenaMessageTitle').textContent = `${tests[mode].title}完成 · ${r.score} 分`;
+        $('#arenaMessageText').textContent = mode === 'tracking' ? `有效追踪 ${Math.round(r.accuracy * 100)}%，平滑度 ${Math.round(r.smoothness * 100)}%。` : `命中 ${r.hits} 个，平均触达 ${Math.round(r.avgRt)} ms，路径效率 ${Math.round(r.efficiency * 100)}%。`;
+        $('#startTest').textContent = '重新测试';
+        $('#arenaMessage').classList.remove('hidden');
+        $('#nextTest').disabled = false;
+        $('#testProgress').style.width = '100%';
+        updateNavStates();
+        if (completedCount() === 3) {
+          generateFinal();
+          $('#nextTest').textContent = '查看专属结果';
+        } else {
+          $('#nextTest').textContent = '下一项测试';
+        }
+        draw(performance.now());
+      }
+
+      function completedCount() { return ['flick', 'tracking', 'micro'].filter(k => state.results[k]).length; }
+
+      $('#nextTest').addEventListener('click', () => {
+        if (completedCount() === 3) {
+          generateFinal();
+          showView('results');
+          return;
+        }
+        const order = ['flick', 'tracking', 'micro'];
+        const next = order.find(name => !state.results[name]);
+        selectTest(next || 'flick');
+      });
+
+      function generateFinal() {
+        if (completedCount() < 3) return;
+        const p = profile();
+        const currentEdpi = p.dpi * p.currentSens;
+        const flick = state.results.flick.score;
+        const tracking = state.results.tracking.score;
+        const micro = state.results.micro.score;
+        const styleAnchor = { arm: 235, hybrid: 275, wrist: 325 }[p.style];
+        const padAdjustment = clamp((45 - p.mousepad) * 1.4, -35, 35);
+        const anchor = styleAnchor + padAdjustment;
+
+        // Comparative performance decides direction; the current setting remains the strongest anchor.
+        const precisionAverage = tracking * .55 + micro * .45;
+        const direction = clamp((precisionAverage - flick) / 100 * .14, -.10, .10);
+        const controlPenalty = tracking < 52 ? -(52 - tracking) / 52 * .045 : 0;
+        const microPenalty = micro < 48 ? -(48 - micro) / 48 * .035 : 0;
+        const testEdpi = currentEdpi * (1 + direction + controlPenalty + microPenalty);
+        const consistency = 1 - (Math.max(flick, tracking, micro) - Math.min(flick, tracking, micro)) / 100;
+        const profileWeight = clamp(.12 + consistency * .05, .12, .17);
+        let recommendedEdpi = testEdpi * (1 - profileWeight) + anchor * profileWeight;
+        recommendedEdpi = clamp(recommendedEdpi, 140, 480);
+
+        let sens = clamp(recommendedEdpi / p.dpi, .001, 10);
+        sens = Math.round(sens * 1000) / 1000;
+        recommendedEdpi = sens * p.dpi;
+        const final = { sens, edpi: recommendedEdpi, cm: cm360(recommendedEdpi), profile: p, created: Date.now() };
+        state.results.final = final;
+        localStorage.setItem('valSenseTests', JSON.stringify(state.results));
+        renderResults();
+        updateNavStates();
+      }
+
+      function renderResults() {
+        const final = state.results.final;
+        if (!final) return;
+        $('#emptyResult').hidden = true;
+        $('#resultContent').hidden = false;
+        const sensText = final.sens.toFixed(3);
+        $('#recommendedSens').textContent = sensText;
+        $('#copyValue').value = sensText;
+        $('#resultDpi').textContent = final.profile.dpi;
+        $('#resultEdpi').textContent = Math.round(final.edpi) + ' eDPI';
+        $('#resultCm').textContent = final.cm.toFixed(1) + ' cm';
+        const scores = ['flick', 'tracking', 'micro'].map(k => state.results[k].score);
+        const spread = Math.max(...scores) - Math.min(...scores);
+        $('#confidenceValue').textContent = spread <= 18 ? '高' : spread <= 30 ? '中高' : '中';
+        ['flick', 'tracking', 'micro'].forEach(name => {
+          const score = state.results[name].score;
+          $('#' + name + 'Score').textContent = score + ' / 100';
+          requestAnimationFrame(() => { $('#' + name + 'Bar').style.width = score + '%'; });
+        });
+
+        const [f, t, m] = scores;
+        if (f > (t + m) / 2 + 8) {
+          $('#diagnosisTitle').textContent = '速度领先，控制略弱。';
+          $('#diagnosisText').textContent = '系统已适当降低 eDPI，保留甩枪速度，同时增加追踪与微调容错。';
+        } else if ((t + m) / 2 > f + 8) {
+          $('#diagnosisTitle').textContent = '控制稳定，转向偏慢。';
+          $('#diagnosisText').textContent = '系统已小幅提高 eDPI，让大角度转移更快，不明显牺牲精确度。';
+        } else if (m < 48) {
+          $('#diagnosisTitle').textContent = '微调存在过冲。';
+          $('#diagnosisText').textContent = '推荐值更偏向稳定，帮助小范围修正和远距离点射。';
+        } else {
+          $('#diagnosisTitle').textContent = '速度与控制平衡。';
+          $('#diagnosisText').textContent = '推荐值贴近现有肌肉记忆，只做了基于测试表现的定向微调。';
+        }
+      }
+
+      function updateNavStates() {
+        $$('.progress-item').forEach((el, index) => {
+          const stateEl = el.querySelector('.progress-state');
+          if (index === 0) { el.classList.add('done'); stateEl.textContent = '已保存'; }
+          if (index === 1) { el.classList.toggle('done', completedCount() === 3); stateEl.textContent = `${completedCount()}/3`; }
+          if (index === 2) { el.classList.toggle('done', !!state.results.final); stateEl.textContent = state.results.final ? '已生成' : '待完成'; }
+        });
+      }
+
+      function draw(now) {
+        const { w, h } = arenaSize();
+        if (!w || !h) return;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#0d1519';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.strokeStyle = 'rgba(155, 183, 190, .09)';
+        ctx.lineWidth = 1;
+        const grid = Math.max(38, Math.round(w / 18));
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += grid) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+        for (let y = 0; y <= h; y += grid) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(139, 245, 198, .08)';
+        ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+
+        if (state.target && state.phase === 'active') {
+          const inside = Math.hypot(state.pointer.x - state.target.x, state.pointer.y - state.target.y) <= state.target.r;
+          ctx.beginPath();
+          ctx.arc(state.target.x, state.target.y, state.target.r + 7, 0, Math.PI * 2);
+          ctx.strokeStyle = inside ? 'rgba(139, 245, 198, .6)' : 'rgba(255, 90, 101, .34)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(state.target.x, state.target.y, state.target.r, 0, Math.PI * 2);
+          ctx.fillStyle = inside ? '#8bf5c6' : '#ff5a65';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(state.target.x, state.target.y, Math.max(3, state.target.r * .18), 0, Math.PI * 2);
+          ctx.fillStyle = '#f5f7f4';
+          ctx.fill();
+        }
+
+        if (state.pointer.visible) {
+          const x = state.pointer.x, y = state.pointer.y;
+          ctx.strokeStyle = '#f4f7f5';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x - 13, y); ctx.lineTo(x - 4, y);
+          ctx.moveTo(x + 4, y); ctx.lineTo(x + 13, y);
+          ctx.moveTo(x, y - 13); ctx.lineTo(x, y - 4);
+          ctx.moveTo(x, y + 4); ctx.lineTo(x, y + 13);
+          ctx.stroke();
+          ctx.fillStyle = '#ff5a65';
+          ctx.fillRect(x - 1, y - 1, 2, 2);
+        }
+      }
+
+      function toast(message) {
+        const el = $('#notice');
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(() => el.classList.remove('show'), 1800);
+      }
+
+      $('#copyButton').addEventListener('click', async () => {
+        const value = $('#copyValue').value;
+        try { await navigator.clipboard.writeText(value); }
+        catch { $('#copyValue').select(); document.execCommand('copy'); }
+        toast(`已复制 ${value}`);
+      });
+
+      $('#retestButton').addEventListener('click', () => {
+        delete state.results.flick; delete state.results.tracking; delete state.results.micro; delete state.results.final;
+        localStorage.setItem('valSenseTests', JSON.stringify(state.results));
+        $$('.test-tab').forEach(t => t.classList.remove('done'));
+        $('#nextTest').textContent = '下一项测试';
+        selectTest('flick');
+        updateNavStates();
+        showView('tests');
+      });
+
+      $('#resetButton').addEventListener('click', () => {
+        localStorage.removeItem('valSenseProfile');
+        localStorage.removeItem('valSenseTests');
+        state.results = {};
+        $('#dpi').value = 800; $('#currentSens').value = '0.320'; $('#refreshRate').value = '144'; $('#mousepad').value = 45;
+        state.resolution = 1080; state.style = 'hybrid';
+        setSegment($('#resolutionSegments'), 1080); setSegment($('#styleSegments'), 'hybrid');
+        $$('.test-tab').forEach(t => t.classList.remove('done'));
+        $('#emptyResult').hidden = false; $('#resultContent').hidden = true;
+        updateBaseline(); updateNavStates(); showView('setup');
+        toast('本地数据已清除');
+      });
+
+      function restore() {
+        try {
+          const saved = JSON.parse(localStorage.getItem('valSenseProfile'));
+          if (saved) {
+            $('#dpi').value = saved.dpi; $('#currentSens').value = Number(saved.currentSens).toFixed(3);
+            $('#refreshRate').value = saved.refresh; $('#mousepad').value = saved.mousepad;
+            state.resolution = saved.resolution || 1080; state.style = saved.style || 'hybrid';
+            setSegment($('#resolutionSegments'), state.resolution); setSegment($('#styleSegments'), state.style);
+          }
+          const savedTests = JSON.parse(localStorage.getItem('valSenseTests'));
+          if (savedTests) {
+            state.results = savedTests;
+            ['flick', 'tracking', 'micro'].forEach(name => {
+              if (state.results[name]) $(`.test-tab[data-test="${name}"]`).classList.add('done');
+            });
+            if (state.results.final) renderResults();
+          }
+        } catch { localStorage.removeItem('valSenseTests'); }
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && (state.phase === 'active' || state.phase === 'countdown')) {
+          // Performance-time based countdown remains correct when the tab becomes visible again.
+        }
+      });
+
+      restore();
+      updateBaseline();
+      updateNavStates();
+      selectTest('flick');
+      resizeCanvas();
+    })();
+  </script>
+</body>
+</html>
